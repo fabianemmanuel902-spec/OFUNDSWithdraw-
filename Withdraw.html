@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal {
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .sharp-orange {
+            background: linear-gradient(135deg, #FF6200, #FF8A00);
+        }
+        
+        .copy-toast {
+            animation: toastIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 min-h-screen text-white">
+    <div class="max-w-md mx-auto bg-[#0A0F1C] min-h-screen shadow-2xl overflow-hidden border border-blue-900">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-[#001F3F] to-[#003366] text-white p-6 border-b border-orange-500">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-arrow-right-from-bracket text-3xl text-orange-400"></i>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">WITHDRAWAL</h1>
+                    <p class="text-blue-300 text-sm">Secure Fund Transfer</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- Account Details -->
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">ACCOUNT NUMBER</label>
+                    <input id="accountNumber" type="text" placeholder="Enter account number"
+                           class="w-full px-5 py-4 bg-[#1A2333] border border-blue-800 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none text-white placeholder-gray-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">ACCOUNT NAME</label>
+                    <input id="accountName" type="text" placeholder="Enter account name"
+                           class="w-full px-5 py-4 bg-[#1A2333] border border-blue-800 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none text-white placeholder-gray-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">AMOUNT (₦)</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-4 text-orange-400 font-bold">₦</span>
+                        <input id="amount" type="number" placeholder="0.00"
+                               class="w-full pl-12 pr-5 py-4 bg-[#1A2333] border border-blue-800 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none text-white placeholder-gray-500">
+                    </div>
+                </div>
+
+                <!-- Bank Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">BANK NAME</label>
+                    <select id="bankSelect" 
+                            class="w-full px-5 py-4 bg-[#1A2333] border border-blue-800 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none text-white">
+                        <option value="">Select Bank</option>
+                        <option value="gtb">Guaranty Trust Bank (GTB)</option>
+                        <option value="zenith">Zenith Bank</option>
+                        <option value="access">Access Bank</option>
+                        <option value="uba">United Bank for Africa (UBA)</option>
+                        <option value="firstbank">First Bank</option>
+                        <option value="fidelity">Fidelity Bank</option>
+                        <option value="opay">OPay</option>
+                        <option value="palmpay">PalmPay</option>
+                        <option value="kuda">Kuda Bank</option>
+                        <option value="moniepoint">Moniepoint</option>
+                        <option value="smartcash">Smart Cash</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- First Withdraw Button -->
+            <button onclick="initiateWithdrawal()" 
+                    class="w-full sharp-orange hover:brightness-110 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 text-lg shadow-lg shadow-orange-600/50 transition-all active:scale-95">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>PROCEED TO WITHDRAW</span>
+            </button>
+
+            <!-- Receipt Upload Section -->
+            <div id="receiptSection" class="hidden space-y-6 pt-6 border-t border-blue-900">
+                <div class="text-center">
+                    <h3 class="font-bold text-xl text-orange-400">Upload Receipt</h3>
+                    <p class="text-gray-400 text-sm mt-1">Proof of transaction</p>
+                </div>
+                
+                <div id="uploadArea" class="border-2 border-dashed border-blue-700 hover:border-orange-500 rounded-3xl p-10 text-center cursor-pointer transition-colors bg-[#1A2333]">
+                    <input type="file" id="receiptUpload" accept="image/*,.pdf" class="hidden">
+                    <label for="receiptUpload" class="cursor-pointer block">
+                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-orange-400 mb-4"></i>
+                        <p class="font-semibold text-white">Tap to upload receipt</p>
+                        <p class="text-xs text-gray-500 mt-2">JPG, PNG, PDF • Max 5MB</p>
+                    </label>
+                </div>
+
+                <div id="filePreview" class="hidden bg-[#1A2333] border border-green-600 rounded-2xl p-4 flex items-center gap-3">
+                    <i class="fa-solid fa-file-image text-green-500 text-2xl"></i>
+                    <div class="flex-1 truncate">
+                        <p id="fileName" class="text-sm font-medium"></p>
+                    </div>
+                    <button onclick="removeFile()" class="text-red-400 hover:text-red-500">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="bg-blue-950 border border-blue-800 rounded-2xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="flex items-center gap-2 text-orange-400 text-sm">
+                            <i class="fa-solid fa-info-circle"></i>
+                            <span>Your Ilot ID:</span>
+                        </p>
+                        <button onclick="copyIlotID(this)" 
+                                class="flex items-center gap-1.5 bg-[#1A2333] hover:bg-orange-900 text-orange-400 text-xs px-4 py-2 rounded-xl transition-all">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>COPY</span>
+                        </button>
+                    </div>
+                    <div class="bg-[#1A2333] border border-orange-500 rounded-2xl py-3 px-4 font-mono text-lg font-bold text-white text-center tracking-widest">
+                        8158331002
+                    </div>
+                </div>
+
+                <!-- Second Button -->
+                <button onclick="confirmWithdrawal()" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 text-lg shadow-lg shadow-blue-600/50 transition-all active:scale-95">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>CONFIRM WITHDRAWAL</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="modal bg-[#0A0F1C] border border-orange-500 rounded-3xl max-w-sm w-full mx-4 overflow-hidden">
+            <div class="sharp-orange p-8 text-center">
+                <div class="w-20 h-20 mx-auto bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-gift text-5xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold">Congratulations!</h2>
+                <p class="text-orange-100 mt-1">Withdrawal Initiated Successfully</p>
+            </div>
+            
+            <div class="p-8 text-center">
+                <p class="text-gray-400 mb-3">Use this Ilot ID to buy withdrawal code:</p>
+                
+                <div class="bg-[#1A2333] border border-orange-500 rounded-2xl py-5 px-6 font-mono text-2xl font-bold text-orange-400 tracking-widest flex items-center justify-between">
+                    <span>8158331002</span>
+                    <button onclick="copyIlotID(this)" class="text-orange-300 hover:text-white transition">
+                        <i class="fa-solid fa-copy text-2xl"></i>
+                    </button>
+                </div>
+                
+                <button onclick="closeModal()" 
+                        class="mt-8 w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition">
+                    GOT IT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Modal -->
+    <div id="processingModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="modal bg-[#0A0F1C] border border-blue-700 rounded-3xl max-w-xs w-full mx-4 p-10 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 border-4 border-blue-900 border-t-orange-500 rounded-full animate-spin"></div>
+            </div>
+            <h3 class="text-xl font-bold">Transaction Processing...</h3>
+            <p class="text-gray-400 mt-2">Please wait a moment</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-sm px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 copy-toast">
+        <i class="fa-solid fa-check"></i>
+        <span>Copied to clipboard!</span>
+    </div>
+
+    <script>
+        // File Upload
+        const fileInput = document.getElementById('receiptUpload');
+        const uploadArea = document.getElementById('uploadArea');
+        const filePreview = document.getElementById('filePreview');
+        const fileNameEl = document.getElementById('fileName');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                fileNameEl.textContent = file.name.length > 28 ? file.name.substring(0, 25) + '...' : file.name;
+                uploadArea.classList.add('hidden');
+                filePreview.classList.remove('hidden');
+            }
+        });
+
+        function removeFile() {
+            fileInput.value = '';
+            uploadArea.classList.remove('hidden');
+            filePreview.classList.add('hidden');
+        }
+
+        function initiateWithdrawal() {
+            const accountNum = document.getElementById('accountNumber').value.trim();
+            const accountName = document.getElementById('accountName').value.trim();
+            const amount = document.getElementById('amount').value;
+            const bank = document.getElementById('bankSelect').value;
+
+            if (!accountNum || !accountName || !amount || !bank) {
+                alert("Please fill all fields correctly.");
+                return;
+            }
+
+            document.getElementById('receiptSection').classList.remove('hidden');
+            document.getElementById('receiptSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function confirmWithdrawal() {
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please upload your receipt first.");
+                return;
+            }
+
+            document.getElementById('processingModal').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('processingModal').classList.add('hidden');
+                document.getElementById('successModal').classList.remove('hidden');
+            }, 2500);
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Improved Copy Function
+        function copyIlotID(btn) {
+            const ilotID = "8158331002";
+            
+            navigator.clipboard.writeText(ilotID).then(() => {
+                // Show toast
+                const toast = document.getElementById('toast');
+                toast.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 2500);
+
+                // Visual feedback on button
+                if (btn) {
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-check text-green-400"></i>`;
+                    btn.disabled = true;
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }).catch(() => {
+                alert("Failed to copy. Please copy manually: 8158331002");
+            });
+        }
+
+        // Demo values
+        setTimeout(() => {
+            document.getElementById('accountNumber').value = "0123456789";
+            document.getElementById('accountName').value = "John Doe";
+            document.getElementById('amount').value = "45000";
+        }, 600);
+    </script>
+</body>
+  </html>
