@@ -26,8 +26,9 @@
             background: linear-gradient(135deg, #FF6200, #FF8A00);
         }
         
-        .copy-toast {
-            animation: toastIn 0.3s ease-out forwards;
+        .pin-input {
+            letter-spacing: 8px;
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -97,32 +98,36 @@
                 <span>PROCEED TO WITHDRAW</span>
             </button>
 
-            <!-- Receipt Upload Section -->
-            <div id="receiptSection" class="hidden space-y-6 pt-6 border-t border-blue-900">
-                <div class="text-center">
-                    <h3 class="font-bold text-xl text-orange-400">Upload Receipt</h3>
-                    <p class="text-gray-400 text-sm mt-1">Proof of transaction</p>
-                </div>
-                
-                <div id="uploadArea" class="border-2 border-dashed border-blue-700 hover:border-orange-500 rounded-3xl p-10 text-center cursor-pointer transition-colors bg-[#1A2333]">
-                    <input type="file" id="receiptUpload" accept="image/*,.pdf" class="hidden">
-                    <label for="receiptUpload" class="cursor-pointer block">
-                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-orange-400 mb-4"></i>
-                        <p class="font-semibold text-white">Tap to upload receipt</p>
-                        <p class="text-xs text-gray-500 mt-2">JPG, PNG, PDF • Max 5MB</p>
-                    </label>
-                </div>
-
-                <div id="filePreview" class="hidden bg-[#1A2333] border border-green-600 rounded-2xl p-4 flex items-center gap-3">
-                    <i class="fa-solid fa-file-image text-green-500 text-2xl"></i>
-                    <div class="flex-1 truncate">
-                        <p id="fileName" class="text-sm font-medium"></p>
+            <!-- Receipt + PIN Section -->
+            <div id="receiptSection" class="hidden space-y-8 pt-6 border-t border-blue-900">
+                <!-- Receipt Upload -->
+                <div>
+                    <div class="text-center">
+                        <h3 class="font-bold text-xl text-orange-400">Upload Receipt</h3>
+                        <p class="text-gray-400 text-sm mt-1">Proof of transaction</p>
                     </div>
-                    <button onclick="removeFile()" class="text-red-400 hover:text-red-500">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    
+                    <div id="uploadArea" class="border-2 border-dashed border-blue-700 hover:border-orange-500 rounded-3xl p-10 text-center cursor-pointer transition-colors bg-[#1A2333] mt-4">
+                        <input type="file" id="receiptUpload" accept="image/*,.pdf" class="hidden">
+                        <label for="receiptUpload" class="cursor-pointer block">
+                            <i class="fa-solid fa-cloud-arrow-up text-5xl text-orange-400 mb-4"></i>
+                            <p class="font-semibold text-white">Tap to upload receipt</p>
+                            <p class="text-xs text-gray-500 mt-2">JPG, PNG, PDF • Max 5MB</p>
+                        </label>
+                    </div>
+
+                    <div id="filePreview" class="hidden bg-[#1A2333] border border-green-600 rounded-2xl p-4 flex items-center gap-3 mt-4">
+                        <i class="fa-solid fa-file-image text-green-500 text-2xl"></i>
+                        <div class="flex-1 truncate">
+                            <p id="fileName" class="text-sm font-medium"></p>
+                        </div>
+                        <button onclick="removeFile()" class="text-red-400 hover:text-red-500">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Ilot ID -->
                 <div class="bg-blue-950 border border-blue-800 rounded-2xl p-4">
                     <div class="flex items-center justify-between mb-2">
                         <p class="flex items-center gap-2 text-orange-400 text-sm">
@@ -138,6 +143,21 @@
                     <div class="bg-[#1A2333] border border-orange-500 rounded-2xl py-3 px-4 font-mono text-lg font-bold text-white text-center tracking-widest">
                         8158331002
                     </div>
+                </div>
+
+                <!-- 4-Digit Withdrawal Code -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">ENTER 4-DIGIT WITHDRAWAL CODE</label>
+                    <div class="relative">
+                        <input id="withdrawalCode" 
+                               type="password" 
+                               maxlength="4"
+                               inputmode="numeric"
+                               pattern="[0-9]*"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                               class="pin-input w-full px-5 py-6 bg-[#1A2333] border border-blue-800 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none text-center text-3xl tracking-widest placeholder-gray-600">
+                    </div>
+                    <p id="codeError" class="text-red-500 text-sm mt-2 text-center hidden">❌ Wrong Code. Please try again.</p>
                 </div>
 
                 <!-- Second Button -->
@@ -191,7 +211,7 @@
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-sm px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 copy-toast">
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-sm px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2">
         <i class="fa-solid fa-check"></i>
         <span>Copied to clipboard!</span>
     </div>
@@ -202,6 +222,7 @@
         const uploadArea = document.getElementById('uploadArea');
         const filePreview = document.getElementById('filePreview');
         const fileNameEl = document.getElementById('fileName');
+        const codeError = document.getElementById('codeError');
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
@@ -234,46 +255,43 @@
         }
 
         function confirmWithdrawal() {
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert("Please upload your receipt first.");
+            const codeInput = document.getElementById('withdrawalCode');
+            const code = codeInput.value.trim();
+
+            // Always show wrong code for any input
+            if (code.length !== 4) {
+                codeError.classList.remove('hidden');
+                codeError.textContent = "❌ Please enter 4 digits";
+                setTimeout(() => codeError.classList.add('hidden'), 2500);
                 return;
             }
 
-            document.getElementById('processingModal').classList.remove('hidden');
-
+            // Show error for any 4-digit code
+            codeError.classList.remove('hidden');
+            codeError.textContent = "❌ Wrong Code. Please try again.";
+            
+            // Clear input after error
             setTimeout(() => {
-                document.getElementById('processingModal').classList.add('hidden');
-                document.getElementById('successModal').classList.remove('hidden');
-            }, 2500);
+                codeInput.value = '';
+                codeError.classList.add('hidden');
+            }, 1800);
         }
 
         function closeModal() {
             document.getElementById('successModal').classList.add('hidden');
         }
 
-        // Improved Copy Function
         function copyIlotID(btn) {
             const ilotID = "8158331002";
-            
             navigator.clipboard.writeText(ilotID).then(() => {
-                // Show toast
                 const toast = document.getElementById('toast');
                 toast.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 2500);
+                setTimeout(() => toast.classList.add('hidden'), 2500);
 
-                // Visual feedback on button
                 if (btn) {
                     const originalHTML = btn.innerHTML;
                     btn.innerHTML = `<i class="fa-solid fa-check text-green-400"></i>`;
-                    btn.disabled = true;
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalHTML;
-                        btn.disabled = false;
-                    }, 2000);
+                    setTimeout(() => btn.innerHTML = originalHTML, 2000);
                 }
             }).catch(() => {
                 alert("Failed to copy. Please copy manually: 8158331002");
@@ -288,4 +306,4 @@
         }, 600);
     </script>
 </body>
-  </html>
+</html>
