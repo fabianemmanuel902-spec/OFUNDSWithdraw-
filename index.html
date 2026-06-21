@@ -26,6 +26,11 @@
             background-color: #1A2333;
             border-color: #FF6200;
         }
+        .bank-logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="bg-gray-950 min-h-screen text-white">
@@ -182,17 +187,17 @@
 
     <script>
         const banks = [
-            { name: "Guaranty Trust Bank (GTB)", value: "gtb", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/GTBank_Logo.svg/512px-GTBank_Logo.svg.png" },
-            { name: "Zenith Bank", value: "zenith", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Zenith_Bank_Logo.svg/512px-Zenith_Bank_Logo.svg.png" },
-            { name: "Access Bank", value: "access", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Access_Bank_PlC_Logo.svg/512px-Access_Bank_PlC_Logo.svg.png" },
-            { name: "United Bank for Africa (UBA)", value: "uba", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/UBA_Logo.svg/512px-UBA_Logo.svg.png" },
-            { name: "First Bank", value: "firstbank", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/First_Bank_of_Nigeria_Logo.svg/512px-First_Bank_of_Nigeria_Logo.svg.png" },
-            { name: "Fidelity Bank", value: "fidelity", logo: "https://www.fidelitybank.ng/wp-content/uploads/2023/05/Fidelity-Bank-Logo.png" },
-            { name: "OPay", value: "opay", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/OPay_Logo.svg/512px-OPay_Logo.svg.png" },
-            { name: "PalmPay", value: "palmpay", logo: "https://www.palmplay.ng/wp-content/uploads/2023/05/PalmPay-Logo.png" },
-            { name: "Kuda Bank", value: "kuda", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Kuda_Bank_Logo.svg/512px-Kuda_Bank_Logo.svg.png" },
-            { name: "Moniepoint", value: "moniepoint", logo: "https://moniepoint.com/assets/img/moniepoint-logo.png" },
-            { name: "Smart Cash", value: "smartcash", logo: "https://via.placeholder.com/150x150/FF6200/FFFFFF?text=Smart+Cash" }
+            { name: "Guaranty Trust Bank (GTB)", value: "gtb", logo: "logos/gtb-logo.png" },
+            { name: "Zenith Bank", value: "zenith", logo: "logos/zenith-logo.png" },
+            { name: "Access Bank", value: "access", logo: "logos/access-logo.png" },
+            { name: "United Bank for Africa (UBA)", value: "uba", logo: "logos/uba-logo.png" },
+            { name: "First Bank", value: "firstbank", logo: "logos/firstbank-logo.png" },
+            { name: "Fidelity Bank", value: "fidelity", logo: "logos/fidelity-logo.png" },
+            { name: "OPay", value: "opay", logo: "logos/opay-logo.png" },
+            { name: "PalmPay", value: "palmpay", logo: "logos/palmpay-logo.png" },
+            { name: "Kuda Bank", value: "kuda", logo: "logos/kuda-logo.png" },
+            { name: "Moniepoint", value: "moniepoint", logo: "logos/moniepoint-logo.png" },
+            { name: "Smart Cash", value: "smartcash", logo: "logos/smartcash-logo.png" }
         ];
 
         let selectedBank = null;
@@ -204,7 +209,7 @@
                 const div = document.createElement('div');
                 div.className = 'bank-item border border-blue-800';
                 div.innerHTML = `
-                    <img src="\( {bank.logo}" class="w-10 h-10 object-contain" alt=" \){bank.name}" onerror="this.src='https://via.placeholder.com/40x40/FF6200/fff?text=${bank.name[0]}'">
+                    <img src="\( {bank.logo}" class="bank-logo" alt=" \){bank.name}" onerror="this.src='https://via.placeholder.com/40x40/FF6200/fff?text=${bank.name[0]}'">
                     <span class="font-medium">${bank.name}</span>
                 `;
                 div.onclick = () => {
