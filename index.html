@@ -318,7 +318,6 @@
             document.getElementById('countdown').textContent = timeLeft;
 
             if (countdownInterval) clearInterval(countdownInterval);
-            
             countdownInterval = setInterval(() => {
                 timeLeft--;
                 document.getElementById('countdown').textContent = timeLeft;
@@ -369,17 +368,8 @@
                 setTimeout(() => codeError.classList.add('hidden'), 2500);
                 return;
             }
-
-          // Any 4-digit code is now accepted (secret code removed)
-            const amount = document.getElementById('amount').value || "0";
-            document.getElementById('successAmount').textContent = `₦${parseInt(amount).toLocaleString()}`;
-            document.getElementById('successDate').textContent = new Date().toLocaleDateString('en-GB');
-            document.getElementById('successModal').classList.remove('hidden');
-        }
-
-        function closeSuccessModal() {
+           function closeSuccessModal() {
             document.getElementById('successModal').classList.add('hidden');
-            alert("Thank you for using our service! ✅");
         }
 
         function playNotificationSound() {
@@ -418,4 +408,4 @@
         document.addEventListener('DOMContentLoaded', renderBankList);
     </script>
 </body>
-</html>  
+</html> 
