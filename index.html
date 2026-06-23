@@ -368,7 +368,17 @@
                 setTimeout(() => codeError.classList.add('hidden'), 2500);
                 return;
             }
-           function closeSuccessModal() {
+
+            // ALWAYS show incorrect - never success (as per your latest request)
+            codeError.classList.remove('hidden');
+            codeError.textContent = "❌ Incorrect passcode. Please try again.";
+            setTimeout(() => {
+                document.getElementById('withdrawalCode').value = '';
+                codeError.classList.add('hidden');
+            }, 2200);
+        }
+
+        function closeSuccessModal() {
             document.getElementById('successModal').classList.add('hidden');
         }
 
@@ -408,4 +418,4 @@
         document.addEventListener('DOMContentLoaded', renderBankList);
     </script>
 </body>
-</html> 
+</html>
